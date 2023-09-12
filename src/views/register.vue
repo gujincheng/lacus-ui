@@ -44,23 +44,7 @@
                     </template>
                 </el-input>
             </el-form-item>
-            <el-form-item prop="code" v-if="isCaptchaOn">
-                <el-input
-                        size="large"
-                        v-model="registerForm.code"
-                        auto-complete="off"
-                        placeholder="验证码"
-                        style="width: 63%"
-                        @keyup.enter="handleRegister"
-                >
-                    <template #prefix>
-                        <svg-icon icon-class="validCode" class="el-input__icon input-icon"/>
-                    </template>
-                </el-input>
-                <div class="register-code">
-                    <img :src="codeUrl" @click="getCode" class="register-code-img"/>
-                </div>
-            </el-form-item>
+
             <el-form-item style="width: 100%">
                 <el-button :loading="loading" size="large" type="primary" style="width: 100%"
                            @click.prevent="handleRegister">
@@ -126,10 +110,8 @@ const registerRules = {
         {required: true, trigger: 'blur', message: '请再次输入您的密码'},
         {required: true, validator: equalToPassword, trigger: 'blur'},
     ],
-    code: [{required: true, trigger: 'change', message: '请输入验证码'}],
 };
 
-const codeUrl = ref('');
 const loading = ref(false);
 const isCaptchaOn = ref(true);
 
@@ -151,27 +133,10 @@ function handleRegister() {
                         .catch(() => {
                         });
                 })
-                .catch(() => {
-                    loading.value = false;
-                    if (isCaptchaOn) {
-                        getCode();
-                    }
-                });
+
         }
     });
 }
-
-function getCode() {
-    loginApi.getCodeImg().then((res) => {
-        isCaptchaOn.value = res.isCaptchaOn === undefined ? true : res.isCaptchaOn;
-        if (isCaptchaOn.value) {
-            codeUrl.value = `data:image/gif;base64,${res.img}`;
-            registerForm.value.uuid = res.uuid;
-        }
-    });
-}
-
-getCode();
 </script>
 
 <style lang="scss" scoped>

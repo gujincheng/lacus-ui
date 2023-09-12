@@ -29,7 +29,6 @@
                         v-model="loginForm.code"
                         size="large"
                         auto-complete="off"
-                        placeholder="验证码"
                         style="width: 63%"
                         @keyup.enter="handleLogin"
                 >
@@ -37,9 +36,6 @@
                         <svg-icon icon-class="validCode" class="el-input__icon input-icon"/>
                     </template>
                 </el-input>
-                <div class="login-code">
-                    <img :src="codeUrl" @click="getCode" class="login-code-img"/>
-                </div>
             </el-form-item>
             <el-checkbox v-model="loginForm.rememberMe" style="margin: 0px 0px 25px 0px">记住密码</el-checkbox>
             <el-form-item style="width: 100%">
@@ -81,13 +77,10 @@ const loginForm = ref({
 const loginRules = {
     username: [{required: true, trigger: 'blur', message: '请输入您的账号'}],
     password: [{required: true, trigger: 'blur', message: '请输入您的密码'}],
-    code: [{required: true, trigger: 'change', message: '请输入验证码'}],
 };
 
 const codeUrl = ref('');
 const loading = ref(false);
-// 验证码开关
-const isCaptchaOn = ref(true);
 // 注册开关
 const register = ref(false);
 const redirect = ref(undefined);
@@ -113,25 +106,13 @@ function handleLogin() {
                 .then(() => {
                     router.push({path: redirect.value || '/'});
                 })
-                .catch(() => {
-                    loading.value = false;
-                    // 重新获取验证码
-                    if (isCaptchaOn.value) {
-                        getCode();
-                    }
-                });
+                ;
         }
     });
 }
 
 function getCode() {
-    loginApi.getCodeImg().then((res) => {
-        isCaptchaOn.value = res.isCaptchaOn === undefined ? true : res.isCaptchaOn;
-        if (isCaptchaOn.value) {
-            codeUrl.value = `data:image/gif;base64,${res.img}`;
-            loginForm.value.uuid = res.uuid;
-        }
-    });
+
 }
 
 function getCookie() {
